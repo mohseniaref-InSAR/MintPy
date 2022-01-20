@@ -13,6 +13,8 @@ import time
 import argparse
 import warnings
 
+import numpy
+
 from mintpy.defaults import auto_path
 from mintpy.defaults.template import get_template_content
 from mintpy.objects import (
@@ -444,7 +446,12 @@ def read_inps_dict2ifgram_stack_dict_object(iDict):
         # YYYYDDD       for gmtsar [modern Julian date]
         # YYYYMMDDTHHMM for uavsar
         # YYYYMMDD      for all the others
-        date6s = readfile.read_attribute(dsPath0)['DATE12'].replace('_','-').split('-')
+        try:    ## Kai tweak for importing iono as unw, this should be revert once done with testing
+            date6s = readfile.read_attribute(dsPath0)['DATE12'].replace('_','-').split('-')
+        except:
+            date6s = dsPath0.split('/')[-3].replace('_','-').split('-')
+            date6s[0] = date6s[0][2:]
+            date6s[1] = date6s[1][2:]
         if iDict['processor'] == 'gmtsar':
             date12MJD = os.path.basename(os.path.dirname(dsPath0))
         else:
@@ -465,7 +472,10 @@ def read_inps_dict2ifgram_stack_dict_object(iDict):
         for dsName in dsNameList:
             # search the matching data file for the given date12
             # 1st guess: file in the same order as the one for dsName0
-            dsPath1 = dsPathDict[dsName][i]
+            try:
+                dsPath1 = dsPathDict[dsName][i]
+            except:
+                dsPath1 = 'none'
             if (all(d6 in dsPath1 for d6 in date6s)
                     or (date12MJD and date12MJD in dsPath1)):
                 ifgramPathDict[dsName] = dsPath1
@@ -481,6 +491,7 @@ def read_inps_dict2ifgram_stack_dict_object(iDict):
 
                 else:
                     print('WARNING: {:>18} file missing for pair {}'.format(dsName, date6s))
+                    ifgramPathDict[dsName] = 'missing'
 
         # initiate ifgramDict object
         ifgramObj = ifgramDict(datasetDict=ifgramPathDict)

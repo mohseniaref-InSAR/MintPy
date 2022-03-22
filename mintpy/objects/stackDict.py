@@ -152,6 +152,10 @@ class ifgramStackDict:
                 for i in range(self.numIfgram):
                     # read
                     ifgramObj = self.pairsDict[self.pairs[i]]
+                    if dsName.startswith('ion'):
+                        print(' ### Kai: no downlook ionoPhase (already downsampled 10x10 in topsStack)')
+                        xstep = 1
+                        ystep = 1
                     data = ifgramObj.read(dsName,
                                           box=box,
                                           xstep=xstep,
@@ -270,11 +274,16 @@ class ifgramDict:
 
     def read(self, family, box=None, xstep=1, ystep=1):
         self.file = self.datasetDict[family]
-        data, metadata = readfile.read(self.file,
-                                       datasetName=family,
-                                       box=box,
-                                       xstep=xstep,
-                                       ystep=ystep)
+        ## Kai: watch out the missing iono pairs due to different network
+        if self.file == 'missing':
+            data     = np.nan
+            metadata = {}
+        else:
+            data, metadata = readfile.read(self.file,
+                                        datasetName=family,
+                                        box=box,
+                                        xstep=xstep,
+                                        ystep=ystep)
         return data, metadata
 
     def get_size(self, family=ifgramDatasetNames[0]):

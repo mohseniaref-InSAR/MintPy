@@ -272,12 +272,6 @@ def read(fname, box=None, datasetName=None, print_msg=True, xstep=1, ystep=1, da
         dsname4atr = datasetName.split('-')[0]
     atr = read_attribute(fname, datasetName=dsname4atr)
 
-    ## Kai: skip iono multilook (will need to be fixed better later)
-    if isinstance(datasetName, str) and (datasetName.startswith('ion')):
-        print('   >>  Kai: dealing with "{}" (if ionoPhase then no look)'.format(datasetName))
-        xstep = 1
-        ystep = 1
-
     # box
     length, width = int(atr['LENGTH']), int(atr['WIDTH'])
     if not box:

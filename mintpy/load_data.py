@@ -13,8 +13,6 @@ import time
 import argparse
 import warnings
 
-import numpy
-
 from mintpy.defaults import auto_path
 from mintpy.defaults.template import get_template_content
 from mintpy.objects import (

@@ -152,14 +152,17 @@ class ifgramStackDict:
                 for i in range(self.numIfgram):
                     # read
                     ifgramObj = self.pairsDict[self.pairs[i]]
-                    if dsName.startswith('ion'):
+                    if isinstance(dsName, str) and dsName.startswith('ion'):
                         print(' ### Kai: no downlook ionoPhase (already downsampled 10x10 in topsStack)')
-                        xstep = 1
-                        ystep = 1
-                    data = ifgramObj.read(dsName,
-                                          box=box,
-                                          xstep=xstep,
-                                          ystep=ystep)[0]
+                        data = ifgramObj.read(dsName,
+                                            box=box,
+                                            xstep=1,
+                                            ystep=1)[0]
+                    else:
+                        data = ifgramObj.read(dsName,
+                                            box=box,
+                                            xstep=xstep,
+                                            ystep=ystep)[0]
 
                     # special handling to offset covariance file
                     if dsName.endswith('OffsetStd'):
